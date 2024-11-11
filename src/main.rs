@@ -17,8 +17,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // socket closed
                     Ok(n) if n == 0 => return,
                     Ok(n) => {
-                        println!("{n}");
-                        socket.write(b"+PONG\r\n").await.expect("Error");
+                        let result= redis_protocol_parser(&buf[..n]);
+                        let format_result = format!("+{}",{result});
+                        socket.write(format_result.as_bytes()).await.expect("Error");
                     },
                     Err(e) => {
                         eprintln!("failed to read from socket; err = {:?}", e);
@@ -28,4 +29,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             }
         });
     }
+}
+
+fn redis_protocol_parser(data: &[u8]) -> String {
+    let data_str = std::str::from_utf8(data).expect("Error parsing from utf8");
+    let binding: String = data_str.to_lowercase();
+    let lines: Vec<&str> = binding.split("\r\n").collect();
+    let command = lines[2];
+    
+    if command != "echo" {
+        return "PONG\r\n".to_string();
+    }
+
+    let arg = lines[4];
+    return arg.to_string()+ "\r\n";
 }
