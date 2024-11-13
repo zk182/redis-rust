@@ -1,6 +1,10 @@
-use tokio::net::TcpListener;
+use command_parser::CommandParser;
+use storage::Storage;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
-use std::collections::HashMap;
+use tokio::net::TcpListener;
+
+mod command_parser;
+mod storage;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -8,10 +12,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     loop {
         let (mut socket, _) = listener.accept().await?;
-        let mut map= HashMap::new();
 
         tokio::spawn(async move {
             let mut buf = [0; 1024];
+            let mut storage = Storage::new();
+            let command_parser = CommandParser::new();
 
             // In a loop, read data from the socket and write the data back.
             loop {
@@ -19,10 +24,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // socket closed
                     Ok(n) if n == 0 => return,
                     Ok(n) => {
-                        let result= compute_command(&buf[..n], &mut map);
-                        let format_result = format!("+{}",{result});
-                        socket.write(format_result.as_bytes()).await.expect("Error");
-                    },
+                        let result = command_parser.compute_command(&buf[..n], &mut storage);
+                        socket.write(result.as_bytes()).await.expect("Error");
+                    }
                     Err(e) => {
                         eprintln!("failed to read from socket; err = {:?}", e);
                         return;
@@ -33,36 +37,49 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 }
 
-fn compute_command(data: &[u8], map: &mut HashMap<String,String>) -> String{
-    let data = std::str::from_utf8(data).expect("Error parsing from utf8");
-    let binding: String = data.to_lowercase();
-    let lines: Vec<&str> = binding.split("\r\n").collect();
-    let command = lines[2];
+// fn compute_command(data: &[u8], storage: &mut Storage) -> String {
+//     let data = std::str::from_utf8(data).expect("Error parsing from utf8");
+//     let binding: String = data.to_lowercase();
+//     let lines: Vec<&str> = binding.split("\r\n").collect();
+//     let command = lines[2];
 
-    match command {
-        "echo" => redis_protocol_parser(lines),
-        "set" => set_protocol_parser(lines, map),
-        "get" => get_protocol_parser(lines, map),
-        _ =>  "PONG\r\n".to_string(),
-    }
-}
+//     match command {
+//         "echo" => redis_protocol_parser(lines),
+//         "set" => set_protocol_parser(lines, storage),
+//         "get" => get_protocol_parser(lines, storage),
+//         _ => "+PONG\r\n".to_string(),
+//     }
+// }
 
-fn set_protocol_parser(data: Vec<&str>, map: &mut HashMap<String,String>) -> String {
-    let key = data[4].to_string();
-    let value = data[6].to_string();
+// fn set_protocol_parser(data: Vec<&str>, storage: &mut Storage) -> String {
+//     let key = data[4].to_string();
+//     let value = data[6].to_string();
+//     let mut expiry = None;
 
-    println!("Setting key {}, value {}", key, value);
+//     if data.len() > 8 {
+//         let px = data[8].to_string();
+//         if px == "px" && data.len() > 10 {
+//             expiry = Some(data[10].parse().expect("Bad expiry number"));
+//         }
+//     }
 
-    map.insert(key, value);
-    return "OK\r\n".to_string();
-}
+//     if let Some(exp) = expiry {
+//         storage.set(&key, &value, exp);
+//     } else {
+//         storage.set(&key, &value, 0);
+//     }
 
-fn get_protocol_parser(data: Vec<&str>, map: &mut HashMap<String,String>) -> String {
-    let key = data[4].to_string();
-    let value = map.get(&key).cloned().unwrap_or("valor por defecto".to_string()) + "\r\n";
-    return value;
-}
+//     return "+OK\r\n".to_string();
+// }
 
-fn redis_protocol_parser(data: Vec<&str>) -> String {
-    return data[4].to_string() + "\r\n";
-}
+// fn get_protocol_parser(data: Vec<&str>, storage: &mut Storage) -> String {
+//     let key = data[4].to_string();
+//     match storage.get(&key) {
+//         Some(item) => return format!("+{}\r\n", item.value.clone()),
+//         None => return "$-1\r\n".to_string(),
+//     };
+// }
+
+// fn redis_protocol_parser(data: Vec<&str>) -> String {
+//     return format!("+{}\r\n", data[4]);
+// }
