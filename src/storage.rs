@@ -8,6 +8,11 @@ pub struct Item {
     pub expires: usize,
 }
 
+pub struct Config {
+    pub dir: String,
+    pub dbfilename: String,
+}
+
 pub struct Storage {
     pub storage: HashMap<String, Item>,
 }
