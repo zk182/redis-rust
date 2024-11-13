@@ -21,21 +21,21 @@ impl CommandParser {
     }
 
     fn set_protocol_parser(data: Vec<&str>, storage: &mut Storage) -> String {
-        let key = data[4].to_string();
-        let value = data[6].to_string();
+        let key = data.get(4).unwrap();
+        let value = data.get(6).unwrap();
         let mut expiry = None;
 
         if data.len() > 8 {
-            let px = data[8].to_string();
-            if px == "px" && data.len() > 10 {
-                expiry = Some(data[10].parse().expect("Bad expiry number"));
+            let px = data.get(8).unwrap().to_string();
+            if px == "px".to_string() && data.len() > 10 {
+                expiry = Some(data.get(10).unwrap().parse().expect("Bad expiry number"));
             }
         }
 
         if let Some(exp) = expiry {
-            storage.set(&key, &value, exp);
+            storage.set(key, value, exp);
         } else {
-            storage.set(&key, &value, 0);
+            storage.set(key, value, 0);
         }
 
         return "+OK\r\n".to_string();
