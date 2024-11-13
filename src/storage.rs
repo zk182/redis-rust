@@ -8,14 +8,24 @@ pub struct Item {
     pub expires: usize,
 }
 
+pub struct Config {
+    pub dir: String,
+    pub dbfilename: String,
+}
+
 pub struct Storage {
     pub storage: HashMap<String, Item>,
+    pub config: Config,
 }
 
 impl Storage {
     pub fn new() -> Self {
         Storage {
             storage: HashMap::new(),
+            config: Config { 
+                dir: String::new(),
+                dbfilename: String::new(),
+            }
         }
     }
 
