@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::env;
 use std::time::Instant;
 
 #[derive(Debug)]
@@ -7,15 +8,47 @@ pub struct Item {
     pub created: Instant,
     pub expires: usize,
 }
+#[derive(Debug)]
+
+pub struct Config {
+    pub dir: String,
+    pub dbfilename: String,
+}
 
 pub struct Storage {
     pub storage: HashMap<String, Item>,
+    pub config: Config,
 }
 
 impl Storage {
     pub fn new() -> Self {
+        let mut dir: String;
+        let mut dbfilename: String;
+
+        let args: Vec<String> = env::args().collect();
+
+        println!("{:?}", args);
+
+        // for argument in args {
+        //     println!("{argument}");
+        //     match argument.as_str() {
+        //         "--dir" => {
+        //             if let Some(value) = args.next() {
+        //                 dir = value;
+        //             }
+        //         }
+        //         "--dbfilename" => {
+        //             if let Some(value) = args.next() {
+        //                 dbfilename = value;
+        //             }
+        //         }
+        //         _ => {}
+        //     }
+        // }
+
         Storage {
             storage: HashMap::new(),
+            // config: Config { dir, dbfilename },
         }
     }
 
@@ -41,6 +74,10 @@ impl Storage {
             true => None,
             false => Some(item),
         }
+    }
+
+    pub fn get_config(&self) -> &Config {
+        &self.config
     }
 }
 
