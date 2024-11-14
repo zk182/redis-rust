@@ -1,7 +1,10 @@
 use crate::storage::Storage;
 
+pub const DIR_COMMAND: &str = "--dir";
+pub const DB_FILENAME_COMMAND: &str = "--dbfilename";
 #[derive(Debug)]
 pub struct CommandParser {}
+
 
 impl CommandParser {
     pub fn compute_command(data: &[u8], storage: &mut Storage) -> String {
