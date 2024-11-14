@@ -3,13 +3,14 @@ use crate::storage::Storage;
 #[derive(Debug)]
 pub struct CommandParser {}
 
+
 impl CommandParser {
     pub fn compute_command(data: &[u8], storage: &mut Storage) -> String {
         let data = std::str::from_utf8(data).expect("Error parsing from utf8");
         let lowercased_data = data.to_lowercase();
         let lines: Vec<&str> = lowercased_data.split("\r\n").collect();
 
-        // println!("lines: {:?}", lines);
+        println!("lines: {:?}", lines);
 
         let command = lines.get(2).map(|&s| s.trim());
         let key = lines.get(4).map(|&k| k.trim());
