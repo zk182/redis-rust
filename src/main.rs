@@ -1,11 +1,12 @@
-use command_parser::CommandParser;
+use command::CommandParser;
 use storage::Storage;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 
-mod command_parser;
+
 mod storage;
 mod args;
+mod command;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
