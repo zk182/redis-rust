@@ -55,16 +55,16 @@ impl CommandParser {
     }
 
     fn get_config_parser(data: Vec<&str>, storage: &mut Storage) -> String {
-        let config = Storage::get_config(&storage);
         let value = data.get(6).map(|&v| v.trim()).unwrap();
-        let response = format!(
-            "*2\r\n$3\r\ndir\r\n${}\r\n{}\r\n",
-            config.dir.len(),
-            &config.dir
-        );
         match value {
-            "dir" => response,
-            "dbfilename" => format!("+{}\r\n", config.dbfilename.clone()),
+            "dir" => {
+                let dir = Storage::get_dir(&storage);
+                format!("*2\r\n$3\r\ndir\r\n${}\r\n{}\r\n",dir.len(), dir) 
+            },
+            "dbfilename" => {
+                let dbfilename = Storage::get_dbfilename(&storage);
+                format!("+{}\r\n", dbfilename)
+            },
             _ => "".to_string(),
         }
     }
