@@ -8,13 +8,14 @@ pub struct Item {
     pub created: Instant,
     pub expires: usize,
 }
-#[derive(Debug)]
 
+#[derive(Debug)]
 pub struct Config {
     pub dir: String,
     pub dbfilename: String,
 }
 
+#[derive(Debug)]
 pub struct Storage {
     pub storage: HashMap<String, Item>,
     pub config: Config,
@@ -35,7 +36,7 @@ impl Storage {
 
         }
 
-        Storage {
+        Self {
             storage: HashMap::new(),
             config: Config { dir, dbfilename },
         }
@@ -47,7 +48,9 @@ impl Storage {
             expires,
             created: Instant::now(),
         };
-        println!("Item con key {:?} esta por setearse: {:?}", key, item);
+
+        // println!("Item con key {:?} esta por setearse: {:?}", key, item);
+        
         self.storage.insert(key.to_string(), item);
     }
 
@@ -55,10 +58,12 @@ impl Storage {
         let item = self.storage.get(key)?;
         let is_expired =
             item.expires > 0 && item.created.elapsed().as_millis() > item.expires as u128;
-        println!(
-            "Getting key: {:?}, value: {:?}, is_expired : {:?},",
-            key, item.value, is_expired
-        );
+
+        // println!(
+        //     "Getting key: {:?}, value: {:?}, is_expired : {:?},",
+        //     key, item.value, is_expired
+        // );
+
         match is_expired {
             true => None,
             false => Some(item),
