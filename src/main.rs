@@ -13,8 +13,11 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     loop {
         let (mut socket, _) = listener.accept().await?;
 
+        println!("Hello!");
+
         tokio::spawn(async move {
             let mut buf = [0; 1024];
+            // println!("Hello!");
             let mut storage = Storage::new();
 
             // In a loop, read data from the socket and write the data back.
