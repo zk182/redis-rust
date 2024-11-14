@@ -3,12 +3,29 @@ use storage::Storage;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 
+use clap::Parser;
+
+// /// Simple program to greet a person
+// #[derive(Parser, Debug)]
+// #[command(version, about, long_about = None)]
+// struct Args {
+//     #[arg(long)]
+//     dir: Option<String>,
+
+//     #[arg(long)]
+//     dbfilename: Option<String>,
+// }
+
 mod command_parser;
 mod storage;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind("127.0.0.1:6379").await?;
+
+    // let args = Args::parse();
+
+    // println!("{:?}",args);
 
     loop {
         let (mut socket, _) = listener.accept().await?;
