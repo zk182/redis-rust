@@ -2,6 +2,8 @@ use std::collections::HashMap;
 use std::env;
 use std::time::Instant;
 
+use crate::command_parser::{ DIR_COMMAND, DB_FILENAME_COMMAND };
+
 #[derive(Debug)]
 pub struct Item {
     pub value: String,
@@ -24,17 +26,31 @@ pub struct Storage {
 impl Storage {
     pub fn new() -> Self {
         let args: Vec<String> = env::args().collect();
-        
+        // let mut iterator = args.iter();
+
         let mut dir = String::from("");
         let mut dbfilename = String::from("");
 
-
-        if args.len() > 2 {
-
-            dir = args[2].clone();
-            dbfilename = args[4].clone();
-
-        }
+        // for arg in iterator {
+        //     match arg.as_str() {
+        //         DIR_COMMAND => {
+        //             let next = iterator.next();
+        //             match next {
+        //                 Some(t)=> {
+        //                     dir = t.to_string()
+        //                 },
+        //                 None => {
+        //                     dir = String::from("");
+        //                 }
+        //             }
+        //             // dir = iterator.next().expect("No dir command provided").to_string();
+        //         }
+        //         DB_FILENAME_COMMAND => {
+        //             dbfilename = iterator.next().expect("No dbfilename command provided").to_string();
+        //         },
+        //         _ => println!("AA"),
+        //     }
+        // }
 
         Self {
             storage: HashMap::new(),
@@ -68,7 +84,7 @@ impl Storage {
     pub fn get_dbfilename(&self) -> &str {
         &self.config.dbfilename
     }
-    
+
 }
 
 impl Default for Item {
