@@ -1,6 +1,20 @@
 use std::collections::HashMap;
-use std::env;
 use std::time::Instant;
+
+use crate::args::Args;
+
+use clap::Parser;
+
+// #[derive(Parser, Debug)]
+// #[command(version, about, long_about = None)]
+// struct Args {
+//     #[arg(long)]
+//     dir: Option<String>,
+
+//     #[arg(long)]
+//     dbfilename: Option<String>,
+// }
+
 
 #[derive(Debug)]
 pub struct Item {
@@ -23,18 +37,36 @@ pub struct Storage {
 
 impl Storage {
     pub fn new() -> Self {
-        let args: Vec<String> = env::args().collect();
-        
-        let mut dir = String::from("");
-        let mut dbfilename = String::from("");
+        // let args: Vec<String> = env::args().collect();
+        // let mut dir = String::from("");
+        // let mut dbfilename = String::from("");
 
+        let args = Args::parse();
 
-        if args.len() > 2 {
+        let dir = args.dir.unwrap_or_else(|| String::from("default_directory"));
+        let dbfilename = args.dbfilename.unwrap_or_else(|| String::from("default_dbfile"));
 
-            dir = args[2].clone();
-            dbfilename = args[4].clone();
-
-        }
+        // for (i, arg) in args.iter().enumerate() {
+        //     match arg.as_str() {
+        //         DIR_COMMAND => {
+        //             if let Some(next_arg) = args.get(i + 1) {
+        //                 dir = next_arg.clone();
+        //             } else {
+        //                 panic!("No dir value provided after DIR_COMMAND");
+        //             }
+        //         }
+        //         DB_FILENAME_COMMAND => {
+        //             if let Some(next_arg) = args.get(i + 1) {
+        //                 dbfilename = next_arg.clone();
+        //             } else {
+        //                 panic!("No dbfilename value provided after DB_FILENAME_COMMAND");
+        //             }
+        //         }
+        //         _ => {
+        //             println!("Argument not recognized: {}", arg);
+        //         }
+        //     }
+        // }
 
         Self {
             storage: HashMap::new(),
@@ -68,7 +100,7 @@ impl Storage {
     pub fn get_dbfilename(&self) -> &str {
         &self.config.dbfilename
     }
-    
+
 }
 
 impl Default for Item {
