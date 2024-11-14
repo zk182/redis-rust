@@ -1,6 +1,7 @@
 use std::collections::HashMap;
-use std::env;
 use std::time::Instant;
+use crate::args::Args;
+use clap::Parser;
 
 #[derive(Debug)]
 pub struct Item {
@@ -23,18 +24,9 @@ pub struct Storage {
 
 impl Storage {
     pub fn new() -> Self {
-        let args: Vec<String> = env::args().collect();
-        
-        let mut dir = String::from("");
-        let mut dbfilename = String::from("");
-
-
-        if args.len() > 2 {
-
-            dir = args[2].clone();
-            dbfilename = args[4].clone();
-
-        }
+        let args = Args::parse();
+        let dir = args.dir.unwrap_or_else(|| String::from(""));
+        let dbfilename = args.dbfilename.unwrap_or_else(|| String::from(""));
 
         Self {
             storage: HashMap::new(),
@@ -68,7 +60,7 @@ impl Storage {
     pub fn get_dbfilename(&self) -> &str {
         &self.config.dbfilename
     }
-    
+
 }
 
 impl Default for Item {
