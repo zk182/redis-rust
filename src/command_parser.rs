@@ -3,22 +3,22 @@ use crate::storage::Storage;
 #[derive(Debug)]
 pub struct CommandParser {}
 
+
 impl CommandParser {
     pub fn compute_command(data: &[u8], storage: &mut Storage) -> String {
         let data = std::str::from_utf8(data).expect("Error parsing from utf8");
         let lowercased_data = data.to_lowercase();
         let lines: Vec<&str> = lowercased_data.split("\r\n").collect();
-
-        // println!("lines: {:?}", lines);
+        
+        println!("lines: {:?}", lines);
 
         let command = lines.get(2).map(|&s| s.trim());
         let key = lines.get(4).map(|&k| k.trim());
 
-        // match command {
         match command {
             Some("echo") => CommandParser::echo_parser(key),
             Some("set") => CommandParser::set_parser(lines, storage),
-            Some("get") => CommandParser::get_parser(lines, storage),
+            Some("get") => CommandParser::get_parser(key, storage),
             Some("config") => CommandParser::get_config_parser(lines, storage),
             _ => "+PONG\r\n".to_string(),
         }
@@ -46,8 +46,8 @@ impl CommandParser {
         return "+OK\r\n".to_string();
     }
 
-    fn get_parser(data: Vec<&str>, storage: &mut Storage) -> String {
-        data.get(4)
+    fn get_parser(key: Option<&str>, storage: &mut Storage) -> String {
+        key
             .map_or("$-1\r\n".to_string(), |key| match storage.get(key) {
                 Some(item) => format!("+{}\r\n", item.value),
                 None => "$-1\r\n".to_string(),
