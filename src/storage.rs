@@ -24,6 +24,8 @@ pub struct Storage {
 impl Storage {
     pub fn new() -> Self {
         let args: Vec<String> = env::args().collect();
+
+        println!("{:?}", args);
         
         let mut dir = String::from("");
         let mut dbfilename = String::from("");
@@ -68,7 +70,7 @@ impl Storage {
     pub fn get_dbfilename(&self) -> &str {
         &self.config.dbfilename
     }
-    
+
 }
 
 impl Default for Item {
