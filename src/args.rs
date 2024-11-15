@@ -9,4 +9,3 @@ pub struct Args {
     #[arg(long)]
     pub dbfilename: Option<String>,
 }
-

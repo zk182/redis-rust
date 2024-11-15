@@ -1,11 +1,12 @@
-use command_parser::CommandParser;
+use command::Command;
 use storage::Storage;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 
-mod command_parser;
-mod storage;
 mod args;
+mod command;
+mod storage;
+
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -24,7 +25,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                     // socket closed
                     Ok(n) if n == 0 => return,
                     Ok(n) => {
-                        let result = CommandParser::compute_command(&buf[..n], &mut storage);
+                        let result = Command::compute(&buf[..n], &mut storage);
                         socket.write(result.as_bytes()).await.expect("Error");
                     }
                     Err(e) => {

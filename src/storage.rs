@@ -1,7 +1,7 @@
-use std::collections::HashMap;
-use std::time::Instant;
 use crate::args::Args;
 use clap::Parser;
+use std::collections::HashMap;
+use std::time::Instant;
 
 #[derive(Debug)]
 pub struct Item {
@@ -35,11 +35,14 @@ impl Storage {
     }
 
     pub fn set(&mut self, key: &str, value: &str, expires: usize) {
-        self.storage.insert(key.to_string(), Item {
-            value: String::from(value),
-            expires,
-            created: Instant::now(),
-        });
+        self.storage.insert(
+            key.to_string(),
+            Item {
+                value: String::from(value),
+                expires,
+                created: Instant::now(),
+            },
+        );
     }
 
     pub fn get(&self, key: &str) -> Option<&Item> {
@@ -60,7 +63,6 @@ impl Storage {
     pub fn get_dbfilename(&self) -> &str {
         &self.config.dbfilename
     }
-
 }
 
 impl Default for Item {
